@@ -17,6 +17,7 @@ venv/
 .imu_to_orientation/
 env/
 ENV/
+baseline_filters/*
 
 # Byte-compiled
 *.so
