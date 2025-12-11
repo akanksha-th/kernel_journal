@@ -18,6 +18,7 @@ venv/
 env/
 ENV/
 baseline_filters/*
+report/
 
 # Byte-compiled
 *.so
