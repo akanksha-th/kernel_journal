@@ -1,8 +1,8 @@
 import json
-from src.data_handler.load_data import load_imu_and_gt
-from src.data_handler.normalize import apply_normalization
-from src.data_handler.build_dataset import build_and_save_windows
-from src.config.paths import NORMALIZATION_PARAMS
+from oldie.data_handler.load_data import load_imu_and_gt
+from oldie.data_handler.normalize import apply_normalization
+from oldie.data_handler.build_dataset import build_and_save_windows
+from oldie.config.paths import NORMALIZATION_PARAMS
 
 sequence = "train_dataset/101office1"
 

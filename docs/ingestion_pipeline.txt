@@ -1,0 +1,114 @@
+## Part1 - Data Ingestion
+
+Get the IMU sensor data (acce, gyro, mag) + timestamps
+- 3 accelerometer axes
+- 3 gyroscope axes
+- 3 magnetometer axes
+- timestamps
+(all in body frame)
+
+Get groundtruth: timestamps + position(3D) + quaternions(4D)
+(all in global/world frame)
+
+1. Load and inspect shapes
+- check sensor_sample_count = gt_sample_count
+    - if not, will need interpolation later.
+
+2. Check sampling rate and jitter
+_.Neural Networks expect roughly constant dt._
+- mean dt: sampling interval
+- std of dt: jitter
+    - if jitter is large, resample or interpolate
+
+3. Know the sensor data stats
+- mean, std, min, max
+
+_.**You ask why?**._
+EXPECTED BEHAVIOURS and DEVIATIONS
+- accelerometer
+    - _.EXPECTED._: If the sensor is not moving, (ax, ay, az) should measure ONLY gravity (along vertical axis): mean ~ [0, 0, -/+9.81]
+    - _.DEVIATION._: 
+        1. mean offset on all axes —> sensor bias -> need to calibrate
+        2. std too high —> noise -> need filtering/smoothing
+        3. gravity magnitude != 9.81 —> incorrect scaling -> needs scaling calibration
+        4. gravity appears tilted when stationary —> misalignment or IMU slightly rotated
+
+- gyrocope
+    - _.EXPECTED._: If gyro at rest, mean = [0, 0, 0] => No rotation, and std ~small.
+    - _.DEVIATION._:
+        1. mean offset != 0 —> gyro bias -> must subtract
+        2. std high —> gyro noise
+        3. drift over time —> bias instability -> allan variance needed
+
+- magnetometer (this is the mosttttt dirty)
+    - _.EXPECTED._: mag_field of earth = ~45-55 μT
+    - _.DEVIATION._: 
+        1. data forms an ellipse not a sphere —> hard/soft iron distortion -> calibration needed
+        2. mean != local_magnetic_field —> bias present
+        3. scale differences between axes —> need scaling matrix
+        4. noise or spikes —> requires filtering
+
+4. Calibration — what happens for each sensor
+- accelerometer calibration
+    - fixes bias, scale factors, misalignments
+    - typically solved via:
+        - six-position calibration
+        - fit ellipsoid —> sphere
+
+- gyroscope calibration
+    - compute allan variance —> bias instability + noise parameters
+
+- magnetometer calibration
+    - fit ellipsoid —> sphere
+
+5. Denoising
+- low pass filer -> for accelero/gyro noise removal
+- moving averages -> simple and effective for IMUs
+- Butterworth filter ???
+- Magdwick/mahony filter -> fuse IMU signals —> orientation
+- outlier removal -> for magnetometer
+(_.Denoising is not REQUIRED in neural networks, but helps improve stability._)
+
+6. Windowing + DataLoader
+- choose window length
+- choose overlap
+- normalize per sensor type
+- create dataloader
+
+7. Synchronization with groundtruth
+To solve the problem of IMU and groundtruth timestamps mismatch, we need:
+- interpolation
+- alignment
+- time offset correction (find best correlation)
+
+8. Coordinate frames
+as the model needs to map IMU to orientation, while IMU is in body frame and orientation in global frame, frame consistency matters
+
+9. Gravity Removal (task dependent)
+for accelerometer —> raw_acce = gravity + linear_acce
+- for Orientation estimation: keep gravity first, then remove using quaternion ???
+
+## IMPORTANT
+1. Resample before most processing (but after basic checks).
+    - If jitter is large, resample numeric sensors and SLERP quaternions to a uniform grid before filtering/derivatives/ALLAN computations.
+        - Rationale: filters and windowing assume uniform dt.
+2. Units: always check gyro units (deg/s vs rad/s) immediately.
+3. Static detection & bias estimation needs robust rules (don’t rely on single percentile).
+    - Combine conditions: low gyro norm, accel norm ≈ 9.81, low accel variance. Visualize masks.
+        - Compute bias per-sequence; optionally compute global bias across many sequences if device is same.
+4. Calibration order matters in practice:
+    - Estimate gyro bias first (stationary).
+    - Do mag calibration (ellipsoid) using many sequences / full rotations. Save global mag params.
+    - Do accel bias + scale (using many static poses); advanced: ellipsoid fit.
+_.Why: mag and accel often require many orientations — combine sequences._
+5. Allan variance purpose: use it to estimate noise parameters (ARW, bias instability) — useful for filter tuning and synthetic augmentation. 
+    - Subtracting bias will not change Allan curve (that’s expected).
+6. Gravity removal:
+    - Offline / diagnostics: you can use GT quaternion to rotate gravity into body and subtract (great for analysis and labels).
+    - For training inputs: don’t leak GT-derived gravity into model inputs. Use LPF-based gravity estimate from accel (or learn to extract it) if you want gravity removed in inputs.
+7. Quaternion handling:
+    - Always normalize quaternions and fix sign flips (q vs −q).
+    - If you predict quaternions, use geodesic/angle distance loss; if regressing delta rotations, use appropriate log-map.
+8. Magnetometer: prefer algebraic ellipsoid fit (least squares) or proven libs over (max+min)/2 hacks — combine many sequences for stability.
+9. Outliers / saturation: check for clipping (abs(values) == sensor_range), spikes, and remove or patch (median filter).
+10. Normalization (train/val/test): compute global training mean/std and use them for val/test. Save norm_params.json with all calibration constants.

@@ -1,6 +1,6 @@
-from src.data_handler.load_data import load_imu_and_gt
-from src.data_handler.preprocess import preprocess_imu_gt
-from src.data_handler.normalize import compute_norm_params
+from oldie.data_handler.load_data import load_imu_and_gt
+from oldie.data_handler.preprocess import preprocess_imu_gt
+from oldie.data_handler.normalize import compute_norm_params
 
 sequence = "train_dataset/101office1"
 
