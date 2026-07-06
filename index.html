@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Kernel Journal — a 16-week map through ML systems</title>
-<meta name="description" content="A weekly log of learning kernel programming for ML systems: NumPy → PyTorch → CUDA → Triton → JAX/Pallas, through image and audio case studies.">
+<title>Kernel Journal - a learning log</title>
+<meta name="description" content="A log of learning more about niche topics by making simpler observations. NumPy -> PyTorch -> CUDA -> Triton -> JAX/Pallas, through image and audio case studies.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
@@ -25,14 +25,11 @@
 
 <main id="top">
   <section class="hero wrap">
-    <p class="eyebrow">16 weeks <span class="ink">·</span> 1 post per week <span class="ink">·</span> image + audio, side by side</p>
-    <h1 class="title">A map through memory, kernels, and the two signals I know best.</h1>
+    <p class="eyebrow">16 weeks <span class="ink">·</span> 1 post per week (hopefully) <span class="ink">·</span> image, audio and more</p>
+    <h1 class="title">A map through memory, kernels, and the two signals I wish to know best.</h1>
     <p class="tagline">
-      This is my running log of learning kernel programming for ML systems —
-      from NumPy strides to raw CUDA to Triton to JAX/Pallas — told twice,
-      once through <strong>images</strong> and once through <strong>audio</strong>.
-      Every entry follows the same shape: <strong>observe → explain why → benchmark → generalize.</strong>
-      Each week is its own folder in the repo — data, notebook, and a README.md that <em>is</em> the post.
+      Every entry follows the same shape: <strong>observe -> explain why -> benchmark -> generalize.</strong>
+      Each weblog is its own folder in the repo – data, notebook, and a README.md that <em>is</em> the post.
     </p>
   </section>
 
@@ -44,11 +41,10 @@
     <p class="section-note">
       Four regions, sixteen stops. Click a marker to read the clue; dig it up to pull the actual entry
       straight from its folder's README.
-      <button class="link-btn" id="v2-note-toggle" type="button">What changed since v1 →</button>
+      <button class="link-btn" id="v2-note-toggle" type="button">Know what's coming next -></button>
     </p>
     <div id="v2-note" class="callout" style="display:none;">
-      <p><strong>What changed from v1:</strong> added a raw CUDA week (Week 6), folded real profiling tools in from that point on instead of relying only on wall-clock timing, added a numerical-correctness + mixed-precision habit that runs through every week from Week 8 onward, and added a dedicated week reading real production kernel code (Week 14).</p>
-      <p><strong>Standing habit, starting Week 8:</strong> every notebook validates its custom implementation against a reference (<code>torch.allclose</code> / max-error check), and every GPU benchmark from Week 6 onward reports at least one profiler-derived number — achieved memory bandwidth or occupancy — not just wall-clock time.</p>
+      <p><strong>From Image Strides to Memory Layout:</strong> Ever wondered what might a simple-looking png image might teach you? </p>
     </div>
 
     <div class="map-scroller">
@@ -86,8 +82,8 @@
       </div>
       <div class="callout" style="margin-bottom:0;">
         <p><strong>If a week runs long,</strong> spend two weeks on it and compress a lighter one later.</p>
-        <p><strong>No local GPU?</strong> Colab's free tier covers everything through Week 13. Nsight Compute works on Colab with some setup — worth checking for the current workaround.</p>
-        <p><strong>Repo milestone (Week 16):</strong> a README tying all 16 posts into one narrative — image and audio as two case studies of the same underlying principles.</p>
+        <p><strong>No local GPU?</strong> Colab's free tier covers everything through Week 13. Nsight Compute works on Colab with some setup – worth checking for the current workaround.</p>
+        <p><strong>Repo milestone (Week 16):</strong> a README tying all 16 posts into one narrative – image and audio as two case studies of the same underlying principles.</p>
       </div>
     </div>
   </section>
@@ -98,10 +94,8 @@
       <h2 class="section-title">Why this exists</h2>
     </div>
     <p class="section-note" style="max-width:680px;">
-      I'm using this roadmap to build hardware-level fluency in ML systems, not just
-      library familiarity — writing the CUDA myself, profiling instead of guessing,
-      and reading production kernels instead of only toy ones. Each entry is tagged
-      by which research identity it speaks to.
+      I'm using this roadmap to build hardware-level fluency in ML systems, getting to writing the CUDA myself, profiling instead of guessing,
+      and reading production kernels too. Each entry is tagged by which research identity it speaks to. Excited to dig in the rabbit hole. =D 
     </p>
   </section>
 </main>
@@ -110,9 +104,7 @@
   <div class="eyebrow" style="margin-bottom:8px;">Tagged for</div>
   <div class="tags" id="tags"></div>
   <p class="footer-meta">
-    Every folder — notebook, data, and README — lives in the
-    <a id="repo-link" href="#">GitHub repo</a>. This site is plain HTML/CSS/JS on GitHub Pages;
-    it renders each week's README on demand, it doesn't store the posts itself.
+    Source and notebooks on <a id="repo-link" href="#">GitHub repo</a>. Built with plain HTML/CSS/JS, hosted on GitHub Pages. 
   </p>
 </footer>
 

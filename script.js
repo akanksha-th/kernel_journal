@@ -205,14 +205,6 @@
     document.getElementById("progress-count").innerHTML = `<strong>${done}</strong> / ${WEEKS.length} dug up`;
   }
 
-  function renderReadingList() {
-    document.getElementById("reading-list").innerHTML = READING_LIST.map((item) => `<li>${item}</li>`).join("");
-  }
-
-  function renderTags() {
-    document.getElementById("tags").innerHTML = RESEARCH_IDENTITIES.map((t) => `<span class="tag">${t}</span>`).join("");
-  }
-
   function initV2Toggle() {
     const toggle = document.getElementById("v2-note-toggle");
     const note = document.getElementById("v2-note");
