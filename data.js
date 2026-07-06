@@ -59,8 +59,8 @@ const WEEKS = [
     n: 1, slug: "image-strides-to-memory-layout", track: "image",
     title: "Image Strides & Memory Layout",
     postTitle: "What a 4-channel image taught me about memory",
-    clueStudy: "`.strides`, C-contig vs F-contig, views vs copies, why conv layers want CHW.",
+    clueStudy: "`.strides`, views vs copies, why conv layers want CHW, `.contiguous()`.",
     clueProject: "Benchmark `arr[::2]` vs `np.ascontiguousarray(arr[::2])`; visualize strides across transpose/reshape/slice on an RGBA image.",
-    published: false
+    published: true
   },
 ];
