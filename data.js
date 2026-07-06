@@ -8,7 +8,7 @@
 // from the folder and renders it. Set `published: true` once a folder
 // exists and has a real README.md in it.
 
-const GITHUB_REPO_URL = "https://github.com/akanksha-th/kernel-journal";
+const GITHUB_REPO_URL = "https://github.com/akanksha-th/kernel_journal";
 const WEEKS_FOLDER = "journal"; // <- change me if you rename the folder containing the weekly posts
 
 const TRACKS = {
@@ -59,8 +59,7 @@ const WEEKS = [
     n: 1, slug: "image-strides-to-memory-layout", track: "image",
     title: "Image Strides & Memory Layout",
     postTitle: "What a 4-channel image taught me about memory",
-    clueStudy: "`.strides`, views vs copies, why conv layers want CHW, `.contiguous()`.",
-    clueProject: "Benchmark `arr[::2]` vs `np.ascontiguousarray(arr[::2])`; visualize strides across transpose/reshape/slice on an RGBA image.",
+    publishedDate: "2026-07-06",
     published: true
   },
 ];

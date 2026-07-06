@@ -113,6 +113,12 @@
   }
 
   // ---------- panel ----------
+  function formatDate(iso) {
+  if (!iso) return "";
+  const d = new Date(iso + "T00:00:00");
+  return d.toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" });
+}
+
   function trackLabel(track) {
     return TRACKS[track] ? TRACKS[track].label : track;
   }
@@ -126,28 +132,34 @@
         <span class="panel-track">${trackLabel(w.track)}</span>
       </div>
       <div class="panel-tech-title">${w.title}</div>
-      <dl>
-        <dt>Study</dt><dd>${w.clueStudy}</dd>
-        <dt>Project</dt><dd>${w.clueProject}</dd>
-      </dl>
+      <div class="panel-date">${formatDate(w.publishedDate)}</div>
       ${w.note ? `<div class="panel-note">${w.note}</div>` : ""}
       ${
         w.published
-          ? `<button class="dig-btn" id="dig-btn">Dig it up →</button>
+          ? `<button class="dig-btn" id="dig-btn">Dig it up –></button>
              <div class="dig-status" id="dig-status"></div>
              <div class="post-content" id="post-content"></div>`
           : `<button class="dig-btn" disabled>Not written yet</button>
              <div class="dig-status">Check back once Week ${w.n} is written.</div>`
       }
       <div class="panel-footer">
-        <a href="${GITHUB_REPO_URL}/tree/main/${WEEKS_FOLDER}/${w.slug}" target="_blank" rel="noopener">View folder on GitHub →</a>
+        <a href="${GITHUB_REPO_URL}/tree/main/${WEEKS_FOLDER}/${w.slug}" target="_blank" rel="noopener">View folder on GitHub –></a>
       </div>
     `;
     panel.classList.add("open");
 
     if (w.published) {
       const btn = document.getElementById("dig-btn");
-      btn.addEventListener("click", () => digUp(w, btn));
+      const content = document.getElementById("post-content");
+      btn.addEventListener("click", () => {
+        if (btn.dataset.state === "open") {
+          content.innerHTML = "";
+          btn.textContent = "Dig it up –>";
+          btn.dataset.state = "";
+        } else {
+          digUp(w, btn);
+        }
+      });
     }
     panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }
@@ -163,12 +175,14 @@
       if (!res.ok) throw new Error("not found");
       const md = await res.text();
       content.innerHTML = window.marked ? marked.parse(md) : `<pre>${md}</pre>`;
-      btn.remove();
       status.textContent = "";
+      btn.disabled = false;
+      btn.textContent = "Fold it back ↩";
+      btn.dataset.state = "open";
     } catch (e) {
       status.textContent = "Couldn't load the README from that folder yet — check the path in data.js matches the repo.";
       btn.disabled = false;
-      btn.textContent = "Dig it up →";
+      btn.textContent = "Dig it up –>";
     }
   }
 
@@ -211,7 +225,7 @@
     toggle.addEventListener("click", () => {
       const open = note.style.display !== "none";
       note.style.display = open ? "none" : "block";
-      toggle.textContent = open ? "What changed since v1 →" : "Hide changelog";
+      toggle.textContent = open ? "What changed since v1 –>" : "Hide changelog";
     });
   }
 

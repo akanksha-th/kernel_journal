@@ -31,7 +31,7 @@ Slicing off alpha channel doesn't give you a "clean" RGB array - it gives a `vie
 
 Confused? Checking the strides makes this obvious:  
         `print(rgb_arr.strides) # Original RGB array strides: (1896, 4, 1)`  
-Strides are simply steps. It tells us *how many bytes would I need to skip, to move one step along this axis?* Keep in mind the dtype is unit8, meaning to store each value in memory, it takes exactly 1 byte space. Observe the output above now:  
+Strides are simply steps. It tells us *how many bytes would I need to skip, to move one step along this axis?* Keep in mind the dtype is uint8, meaning to store each value in memory, it takes exactly 1 byte space. Observe the output above now:  
 
     - the channel stride is 1 => each channel value is 1 byte
     - the height channel stride, meaning the stride to jump down to the next row is 1896. Here the stride would be one row long = 474*4.
@@ -53,7 +53,7 @@ The above thing laid the perfect plot for another question I had cared not to pa
 
 #### **2. Why do images live as (H, W, C) on disk, but ML frameworks always want them as (C, H, W)?**
 
-A camera sensor scans a scene row-by-row, and at each pixel, it writes RGB together before moving on to the next pixel. So, (H, W, C) is how data naturally arrives. But a convolution applies the same operation independently on an entire channel at a time. For that, we want all reds contiguuos, then all greens contiguous, then all blues contiguous - i.e. one long contiguous stretch of memory per channel, not every 3rd byte.  
+A camera sensor scans a scene row-by-row, and at each pixel, it writes RGB together before moving on to the next pixel. So, (H, W, C) is how data naturally arrives. But a convolution applies the same operation independently on an entire channel at a time. For that, we want all reds contiguous, then all greens contiguous, then all blues contiguous - i.e. one long contiguous stretch of memory per channel, not every 3rd byte.  
 
 So we transpose it - `img_clean.transpose(2, 0, 1)`. Transposing to `(C, H, W)` doesn't move any data, it just relabels axes. You'll notice that the strides now become `(1, 1422, 3)` - same numbers, different order. It is important to know that taking a transpose gives a view of the original array, the actual "repacking" only happens when something forces a real copy.
 
@@ -92,7 +92,7 @@ Too much of theory? Yepp, I wanted to "see it" as well. I ran `.sum()` 100 times
 
 Interesting to notice that same data, same mathematical operations, same result but **3.3x** slower just because of the layout. Nothing is different about the values except for how far apart they sit in the memory (RAM).  
 
-Here's some slight explanation on that: the catch here is that CPU doesn't fetch one byte at a time, it pulls a whole `cache line` (meaning 'n' bits simulataneously). When the memory is contiguous, in one go CPU fetches 'n' bytes and all of them are useful to us. But when it's not (in our case, because of every 4th byte being the skipped alpha value), a chunk of 'n' bytes that it loads in one go is junk. We paid to fetch it, only to immediately discard it. This leads to more cache misses, more trips to CPU (slower), and more wasted bandwidth. 
+Here's some slight explanation on that: the catch here is that CPU doesn't fetch one byte at a time, it pulls a whole `cache line` (meaning 'n' bits simultaneously). When the memory is contiguous, in one go CPU fetches 'n' bytes and all of them are useful to us. But when it's not (in our case, because of every 4th byte being the skipped alpha value), a chunk of 'n' bytes that it loads in one go is junk. We paid to fetch it, only to immediately discard it. This leads to more cache misses, more trips to CPU (slower), and more wasted bandwidth. 
 
 See, how much of a difference it really makes!
 
@@ -106,7 +106,8 @@ GPU kernels are extremely sensitive to memory access patterns. "Contiguous acces
 Many optimized backends (cuDNN etc) either require contiguous input or silently make a hidden copy for us - meaning the extra "cleaning" cost is paid anyway, just invisibly and repeatedly instead of once explicitly.
 
 ---
+***The lesson I learned...***
 
     Layout is never neutral. Two arrays can hold the exact same numbers and differ by 3x in speed, purely because of how they're arranged in memory. A transparent pixel value that's always 255 seemed like the least interesting number in the whole array. It turned out to be the one hiding the entire lesson.
 
-***That's the lesson I move ahead with, from this session. Until next time...***
+***Until next time...***
