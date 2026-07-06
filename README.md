@@ -1,22 +1,7 @@
 # Kernel Journal
 
-A 16-week log of learning kernel programming for ML systems — NumPy → PyTorch →
-CUDA → Triton → JAX/Pallas — told through parallel image and audio case studies.
+A log of learning kernel programming for ML systems. 
 Plain HTML/CSS/JS, no build step, deployed on GitHub Pages.
-
-## Deploy it
-
-1. Create a new GitHub repo (e.g. `kernel-journal`).
-2. Push these files (`index.html`, `style.css`, `data.js`, `script.js`) to the
-   repo root, on the `main` branch.
-3. On GitHub: **Settings → Pages → Build and deployment → Source: Deploy from
-   a branch → Branch: `main` / root**.
-4. Wait ~1 minute, then your site is live at
-   `https://<your-username>.github.io/kernel-journal/`.
-
-If you'd rather use a custom domain, add a `CNAME` file with the domain name
-and point your DNS at GitHub Pages per
-[GitHub's docs](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site).
 
 ## Adding a week's post
 
