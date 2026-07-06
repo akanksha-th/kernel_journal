@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kernel Journal — a 16-week trace through ML systems</title>
+<meta name="description" content="A weekly log of learning kernel programming for ML systems: NumPy → PyTorch → CUDA → Triton → JAX/Pallas, through image and audio case studies.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="wrap">
+    <a class="brand" href="#top"><span class="dot"></span>kernel journal</a>
+    <nav class="topnav">
+      <a href="#roadmap">Roadmap</a>
+      <a href="#reading">Reading</a>
+      <a href="#about">About</a>
+    </nav>
+  </div>
+</div>
+
+<main id="top">
+  <section class="hero wrap">
+    <p class="eyebrow">16 weeks <span>·</span> 1 post per week <span>·</span> image + audio, side by side</p>
+    <h1 class="title">A trace through memory, kernels, and the two signals I know best.</h1>
+    <p class="tagline">
+      This is my running log of learning kernel programming for ML systems —
+      from NumPy strides to raw CUDA to Triton to JAX/Pallas — told twice,
+      once through <strong>images</strong> and once through <strong>audio</strong>.
+      Every post follows the same shape: <strong>observe → explain why → benchmark → generalize.</strong>
+    </p>
+
+    <div class="strip-frame">
+      <div class="strip-ruler" id="strip-ruler"></div>
+      <div class="memory-strip" id="memory-strip" role="list" aria-label="16-week progress, one cell per week"></div>
+    </div>
+    <div class="strip-caption">
+      <div class="legend">
+        <span class="legend-item"><span class="legend-swatch image"></span>Image</span>
+        <span class="legend-item"><span class="legend-swatch audio"></span>Audio</span>
+        <span class="legend-item"><span class="legend-swatch systems"></span>Systems / both</span>
+      </div>
+      <span id="progress-count"></span>
+    </div>
+  </section>
+
+  <section class="section wrap" id="roadmap">
+    <div class="section-head">
+      <span class="section-index">§01</span>
+      <h2 class="section-title" style="margin-right:auto">The roadmap</h2>
+    </div>
+    <p class="section-note">
+      Four months, four weeks each. Click a card to mark it done as you publish —
+      progress is saved locally in this browser. <span id="v2-note-toggle" style="text-decoration:underline;cursor:pointer;">What changed since v1 →</span>
+    </p>
+    <div id="v2-note" class="callout" style="display:none; margin-bottom:32px;">
+      <p><strong>What changed from v1:</strong> added a raw CUDA week (Week 6), folded real profiling tools in from that point on instead of relying only on wall-clock timing, added a numerical-correctness + mixed-precision habit that runs through every week from Week 8 onward, and added a dedicated week reading real production kernel code (Week 14).</p>
+      <p><strong>Standing habit, starting Week 8:</strong> every notebook validates its custom implementation against a reference (<code>torch.allclose</code> / max-error check), and every GPU benchmark from Week 6 onward reports at least one profiler-derived number — achieved memory bandwidth or occupancy — not just wall-clock time.</p>
+    </div>
+
+    <div id="months"></div>
+  </section>
+
+  <section class="section wrap" id="reading">
+    <div class="section-head">
+      <span class="section-index">§02</span>
+      <h2 class="section-title">Cross-cutting</h2>
+    </div>
+    <div class="two-col">
+      <div>
+        <p class="section-note" style="margin-bottom:16px;">Read alongside the weeks, not week-locked.</p>
+        <ul class="reading-list" id="reading-list"></ul>
+      </div>
+      <div class="callout">
+        <p><strong>If a week runs long,</strong> spend two weeks on it and compress a lighter one later.</p>
+        <p><strong>No local GPU?</strong> Colab's free tier covers everything through Week 13. Nsight Compute works on Colab with some setup — worth checking for the current workaround.</p>
+        <p><strong>Repo milestone (Week 16):</strong> a README tying all 16 posts into one narrative — image and audio as two case studies of the same underlying principles.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section wrap" id="about">
+    <div class="section-head">
+      <span class="section-index">§03</span>
+      <h2 class="section-title">Why this exists</h2>
+    </div>
+    <p class="section-note" style="max-width:680px;">
+      I'm using this roadmap to build hardware-level fluency in ML systems, not just
+      library familiarity — writing the CUDA myself, profiling instead of guessing,
+      and reading production kernels instead of only toy ones. Each post is tagged
+      by which research identity it speaks to.
+    </p>
+  </section>
+</main>
+
+<footer class="site-footer wrap">
+  <div class="eyebrow" style="margin-bottom:8px;">Tagged for</div>
+  <div class="tags" id="tags"></div>
+  <p class="footer-meta">
+    Source and notebooks on <a href="#" id="repo-link">GitHub</a>. Built with plain HTML/CSS/JS, hosted on GitHub Pages.
+  </p>
+</footer>
+
+<script src="data.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
