@@ -71,9 +71,9 @@ Transpose is not work at all. It never touches a single pixel value, just rewrit
 But it's interesting to know what happens after and how many times: 
 
 - **we touch the data once**: copying first is undeniably the worst choice here. Making the copy means reading the data once (slow and scattered), writing it out in a contiguous fashion, then reading it again to actually use it. That's two full passes over memory, just for one operation (and we all know memory operations are slow). It's clearly visible that `a single strided pass, cache misses and all`, is usually still cheaper than `strided-read + contiguous-write + contiguous-read`.
-- **we touch the data many times**: let's say we have a training loop hitting the same sensor for a 1000 times. Now things have changed. Here, paying the copy cost once would get us a cheaper access forever after. Here it is totally worth it to make a new copy with contiguous data.
+- **we touch the data many times**: let's say we have a training loop hitting the same array/tensor for a 1000 times. Now things have changed. Here, paying the copy cost once would get us a cheaper access forever after. Here it is totally worth it to make a new copy with contiguous data.
 
-It is so interesting. Neither one is a dominant winner, both the methods cater to different requirements. This is exactly why NumPy and PyTorch default to laziness (i.e. no copy happens until some operation actually demands one) - `transpose()` is free and the framework only forces `contiguous()` copy only when it requires it.
+It is so interesting. Neither one is a dominant winner, both the methods cater to different requirements. This is exactly why NumPy and PyTorch default to laziness (i.e. no copy happens until some operation actually demands one) - `transpose()` is free and the framework only forces `contiguous()` copy when it requires it.
 
     For example: a cuDNN kernel cannot operate on strided memory, so that's the time when the framework knows for sure that the copy will pay off.   
 
