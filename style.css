@@ -209,6 +209,7 @@ details.plain-list a { text-decoration: underline; text-underline-offset: 2px; }
   color: var(--text-faint); border: 1px solid var(--hairline); padding: 2px 8px; border-radius: 10px; white-space: nowrap;
 }
 .panel-tech-title { font-family: var(--font-display); font-size: 12px; color: var(--text-faint); margin: 2px 0 16px; }
+.panel-date { font-family: var(--font-display); font-size: 12px; color: var(--text-faint); margin: 2px 0 16px; }
 
 .panel dl { margin: 0 0 14px; }
 .panel dt {
