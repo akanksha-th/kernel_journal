@@ -23,7 +23,7 @@ const MONTHS = [
     number: 1,
     title: "Memory Fundamentals",
     region: "The Foothills of Memory",
-    range: "Weeks 1–4",
+    range: "Weblogs 1–4",
     weeks: [1, 2, 3, 4]
   },
   {
@@ -61,5 +61,12 @@ const WEEKS = [
     postTitle: "What a 4-channel image taught me about memory",
     publishedDate: "2026-07-06",
     published: true
+  },
+  {
+    n: 2, slug: "audio-as-an-array", track: "audio",
+    title: "Audio as an Array",
+    postTitle: "TBD",
+    publishedDate: "2026-07-12",
+    published: false
   },
 ];
