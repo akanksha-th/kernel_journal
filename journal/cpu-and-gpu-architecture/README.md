@@ -32,22 +32,25 @@ When we launch a kernel with, let's say, 256 threads per block, the hardware sil
     A CUDA core is just one ALU lane - no independent control unit, no independent program counter, no branch predictor, nothing. It's just a group of workers, not the thing deciding what to do. A CPU core is a complete, autonomous unit - fetch, decode, execute, its own cache. 
     So, multiple CPU cores are essentially like different technical societies in our college - they all have their own decider and workers, and they all can and do function independently at all times. A GPU, on the other hand, is more like a lecture hall (the SM) with one professor as the decider (the control unit) and a few dozen students as workers (the CUDA cores).
 
-3. "**CACHE**"
+3. "**CACHE**"    
     CPU cache is entirely hardware-managed, invisible to the programmer. But, a GPU's fast on-chip memory (shared memory) is programmer-managed. We, as programmers decide what goes in and what goes out.
 
-4. "**KERNEL**"
-    In CUDA, a "kernel" is just a function we launch on the GPU. It has nothing to do with OS kernel. 
+4. "**KERNEL**"    
+    In CUDA, a "kernel" is just a function we launch on the GPU. It has nothing to do with OS kernel.    
     Early on, this gave me the biggest trip.
 
 More of such "words" that are not covered here, let's tackle them in future, as we keep coming across them.
 
 ---
 
-Now, let's dive deep into their differences:
-One of the first statements that books and blogs will throw at you, when you're trying to understand the difference between them is that : "CPUs have a latency-oriented design and GPUs have a throughput-oriented one". This one statement explains everything architecturally, believe me or not. Latency is how quickly can a single task finishes and throughput is how many tasks complete in a given time. Everything architectural follows from which of the two you optimize for.
+Now, let's dive deep into their differences:   
 
-CPUs, as we all know run processes sequentially. Nothing "actually" works in parallel, it's the time-sharing illusion, what the OS does when there are more processes than cores. A CPU is built to make one thread as fast as possible. On a CPU chip, there exist a small number of powerful ALUs, big caches and a sophisticated control logic (branch prediction, out-of-order execution etc). As for multi-core architectures, this chip design is repeated.
-GPUs actually run processes in parallel. A GPU gives up on making any single thread fast. It uses simple, slow cores with small caches, and one control unit is shared across many ALUs - that saves so much area that thousands of ALUs fit on the chip. 
+One of the first statements that books and blogs will throw at you, when you're trying to understand the difference between them is that : *"CPUs have a latency-oriented design and GPUs have a throughput-oriented one"*.    
+This one statement explains everything architecturally, believe me or not. Latency is how quickly can a single task finishes and throughput is how many tasks complete in a given time. Everything architectural follows from which of the two you optimize for.
+
+Single-core CPUs, as we all know run processes sequentially. Nothing "actually" works in parallel there, it's the time-sharing illusion, what the OS does when there are more processes than cores. A CPU is built to make one thread as fast as possible. On a CPU chip, there exist a small number of powerful ALUs, big caches and a sophisticated control logic (branch prediction, out-of-order execution etc). As for multi-core architectures, this chip design is repeated - each core is still sequential on its own, but with several of them running independent threads side by side, the chip as a whole achieves genuine parallelism.
+
+GPUs actually run processes in parallel throughout. A GPU gives up on making any single thread fast. It uses simple, slow cores with small caches, and one control unit is shared across many ALUs - that saves so much area that thousands of ALUs fit on the chip. 
 
 Memory latency, which a CPU hides with cache, a GPU hides by keeping thousands of threads in flight and switching to a ready one whenever another stalls. The trade-off is that a GPU is only fast when there's a huge amount of independent, similar work to do. A CPU is better when the work is sequential, branchy, or small.
 
@@ -68,21 +71,22 @@ My careless first instinct was to think about OS-style concurrency problems like
 
 My second instinct was that maybe they just don't execute line by line - of course this is wrong - lines of codes are always executed line by line by every architecture, no exceptions.
 
-Its important to understand what the question means: Say we launch 100 threads (so ~4 warps of 32, roughly), and each thread `i` tests its own value `n = i`. The condition `n % 2 == 0` gets evaluated per-thread, using each thread's own data (GPUs parallelization) - 100 different values tested simultaneously, one per lane.
+It's important to understand what the question means: Say we launch 100 threads (so ~4 warps of 32, roughly), and each thread `i` tests its own value `n = i`. The condition `n % 2 == 0` gets evaluated per-thread, using each thread's own data (GPU's parallelization).
 
 So within a single warp: threads holding even values (2, 4, 6, 8...) evaluate the condition true, threads holding odd values (1, 3, 5, 7...) evaluate false. When A() is issued, the even-value lanes are active and the odd-value lanes are masked off. When B() is issued, the mask flips i.e. odds go active, evens go idle.
 
 Finally no more (utterly wrong) instincts left, and it's time for the concept. Let me put this in an execution sequence:
 
-    1. The warp is issued the instructions for `A()` - i.e. every lane receives them but each lane carries a `1-bit active mask`. Lanes where the condition was false get masked inactive - they receive the instruction but it's a no-op for them.
-    2. The warp is then issued the instructions for `B()`. The mask flips: `A()` lanes go inactive then `B()` lanes activate and execute.
-    3. Once both paths finish, all 32 lanes reconverge and go back to executing in lockstep.
+1. The warp is issued the instructions for `A()` - i.e. every lane receives them but each lane carries a `1-bit active mask`. Lanes where the condition was false get masked inactive - they receive the instruction but it's a no-op for them.
+2. The warp is then issued the instructions for `B()`. The mask flips: `A()` lanes go inactive then `B()` lanes activate and execute.
+3. Once both paths finish, all 32 lanes reconverge and go back to executing in lockstep.
 
-`Lockstep just means "moving in exact unison, one step at a time, together"`
+`Lockstep just means "moving in exact unison, one step at a time, together"`    
+
 This is called `warp divergence`. The warp pays for the time of both branches, added together. If `A()` takes `x` cycles and `B()` takes `y` cycles, the warp spends `x+y` cycles total - with half its lanes sitting idle through each half.
 And this is also why branchy, data-dependent code quietly wrecks GPU performance. A CPU is built for such problems - each thread has its own program counter and just goes its own way. A GPU pays real, measurable cycles every time a warp disagrees with itself.
 
-This is important to note that this example shows the *worst-case pattern* for divergence. Since even/odd alternates lane-by-lane, every single warp in the whole grid will have close to a 50/50 split, so every warp pays the full cost of both branches. But for some other lenient conditions, warps may not diverge at all. For them, mostly, only the one warp straddling the boundary pays the cost.
+This is important to note that this example shows the *worst-case pattern* for divergence. Since even/odd alternates lane-by-lane, every single warp in the whole grid will have close to a 50/50 split, so every warp pays the full cost of both branches. But for some other lenient conditions, warps may not diverge at all. For them, mostly, only the one warp strdling the boundary pays the cost.
 
 ---
 ***The lesson I learned...***
