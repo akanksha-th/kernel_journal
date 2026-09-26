@@ -56,14 +56,21 @@ const MONTHS = [
 // published: false until the folder + README.md actually exist in the repo.
 const WEEKS = [
   {
-    n: 1, slug: "image-strides-to-memory-layout", track: "image",
+    n: 1, slug: "cpu-and-gpu-architecture", track: "systems",
+    title: "CPU and GPU Architecture",
+    postTitle: "How different CPUs and GPUs are, structurally",
+    publishedDate: "2026-09-26",
+    published: true
+  },
+  {
+    n: 2, slug: "image-strides-to-memory-layout", track: "image",
     title: "Image Strides & Memory Layout",
     postTitle: "What a 4-channel image taught me about memory",
     publishedDate: "2026-07-06",
     published: true
   },
   {
-    n: 2, slug: "audio-as-an-array", track: "audio",
+    n: 3, slug: "audio-as-an-array", track: "audio",
     title: "Audio as an Array",
     postTitle: "TBD",
     publishedDate: "2026-07-12",
