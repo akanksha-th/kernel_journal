@@ -1,4 +1,4 @@
-###**How different CPUs and GPUs are, structurally?**
+### **How different CPUs and GPUs are, structurally?**
 ---
 
 Let's start from the start. Remember studying for the subject COA - Computer Organization and Architecture. Remember being taught how developing a clear distinction is the most crucial step? If not, now you know that it is!
