@@ -17,16 +17,6 @@ Not to confuse you any further, if you look up Flynn's taxonomy - it is a simple
 So the honest answer is: CPUs and GPUs differ at both levels. A single CPU core executing scalar code is SISD; a multi-core CPU running independent threads is closer to MIMD overall. CPUs focus on executing completely independent, complex streams of instructions. Whereas, GPUs are built on SIMD or SIMT - focusing on broadcasting one single instruction to thousands of data points at once. Worth acknowledging that CPUs also do SIMD (AVX/SSE vector units).
 
 ---
-
-Now, let's dive deep into their differences:
-One of the first statements that books and blogs will throw at you, when you're trying to understand the difference between them is that : "CPUs have a latency-oriented design and GPUs have a throughput-oriented one". This one statement explains everything architecturally, believe me or not. Latency is how quickly can a single task finishes and throughput is how many tasks complete in a given time. Everything architectural follows from which of the two you optimize for.
-
-CPUs, as we all know run processes sequentially. Nothing "actually" works in parallel, it's the time-sharing illusion, what the OS does when there are more processes than cores. A CPU is built to make one thread as fast as possible. On a CPU chip, there exist a small number of powerful ALUs, big caches and a sophisticated control logic (branch prediction, out-of-order execution etc). As for multi-core architectures, this chip design is repeated.
-GPUs actually run processes in parallel. A GPU gives up on making any single thread fast. It uses simple, slow cores with small caches, and one control unit is shared across many ALUs - that saves so much area that thousands of ALUs fit on the chip. 
-
-Memory latency, which a CPU hides with cache, a GPU hides by keeping thousands of threads in flight and switching to a ready one whenever another stalls. The trade-off is that a GPU is only fast when there's a huge amount of independent, similar work to do. A CPU is better when the work is sequential, branchy, or small.
-
----
 Well, here's one really problematic thing that can confuse us, so it's better to clear it up right now - there exist some words, used in context of both the architectures, but mean completely different things for each.
 
 1. "**THREADS**"    
@@ -53,6 +43,15 @@ More of such "words" that are not covered here, let's tackle them in future, as 
 
 ---
 
+Now, let's dive deep into their differences:
+One of the first statements that books and blogs will throw at you, when you're trying to understand the difference between them is that : "CPUs have a latency-oriented design and GPUs have a throughput-oriented one". This one statement explains everything architecturally, believe me or not. Latency is how quickly can a single task finishes and throughput is how many tasks complete in a given time. Everything architectural follows from which of the two you optimize for.
+
+CPUs, as we all know run processes sequentially. Nothing "actually" works in parallel, it's the time-sharing illusion, what the OS does when there are more processes than cores. A CPU is built to make one thread as fast as possible. On a CPU chip, there exist a small number of powerful ALUs, big caches and a sophisticated control logic (branch prediction, out-of-order execution etc). As for multi-core architectures, this chip design is repeated.
+GPUs actually run processes in parallel. A GPU gives up on making any single thread fast. It uses simple, slow cores with small caches, and one control unit is shared across many ALUs - that saves so much area that thousands of ALUs fit on the chip. 
+
+Memory latency, which a CPU hides with cache, a GPU hides by keeping thousands of threads in flight and switching to a ready one whenever another stalls. The trade-off is that a GPU is only fast when there's a huge amount of independent, similar work to do. A CPU is better when the work is sequential, branchy, or small.
+
+---
 To visualize this difference better and its importance, let's take a case:
 
     We now know that GPU ALUs share a control unit. So, what problem does that create when threads in the same group need to take different branches of an if/else? And interestingly, a CPU does not have this problem.
